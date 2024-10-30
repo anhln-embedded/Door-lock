@@ -15,4 +15,6 @@ void lcd_Control_Write(char data);
 void lcd_send_string (char *str);
 void Delete_LCD(void);
 void lcd_gotoxy(uint8_t x,uint8_t y);
+
+void lcd_printf(uint8_t x, uint8_t y, char *format, ...);
 #endif

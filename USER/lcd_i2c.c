@@ -1,15 +1,8 @@
 #include "lcd_i2c.h"
+#include "delay.h"
 #include <stdio.h>
-#include "systick.h"
+#include <stdarg.h>
 
-//struct __FILE {
-// int dummy;
-//};
-//FILE __stdout;
-//int fputc(int ch, FILE *f) {
-// lcd_Data_Write(ch);
-// return ch;
-//}
 
 GPIO_InitTypeDef GPIO_InitStructure;
 I2C_InitTypeDef I2C_InitStructure;
@@ -60,27 +53,27 @@ void lcd_Write_byte(char data)
 }
 void lcd_init (void)
 {
-	SysTick_Init();
+	DelayInit();
 	I2C_LCD_Configuration();
 	/* Set 4-bits interface */
 	lcd_Control_Write(0x33);		 
-	SysTick_DelayMs(10);
+	DelayMs(10);
 	lcd_Control_Write(0x32);
-	SysTick_DelayMs(50);
+	DelayMs(50);
 	/* Start to set LCD function */
 	lcd_Control_Write(0x28);
-		SysTick_DelayMs(50);	
+		DelayMs(50);	
 	/* clear LCD */
 	lcd_Control_Write(0x01);
-		SysTick_DelayMs(50);
+		DelayMs(50);
 	/* wait 60ms */
 	
 	/* set entry mode */
-	lcd_Control_Write(0x06);	SysTick_DelayMs(50);;
+	lcd_Control_Write(0x06);	DelayMs(50);;
 	/* set display to on */	
-	lcd_Control_Write(0x0C);	SysTick_DelayMs(50);;
+	lcd_Control_Write(0x0C);	DelayMs(50);;
 	/* move cursor to home and set data address to 0 */
-	lcd_Control_Write(0x02);	SysTick_DelayMs(50);
+	lcd_Control_Write(0x02);	DelayMs(50);
 }
 void lcd_Data_Write(char data)
 {
@@ -121,7 +114,7 @@ void lcd_send_string (char *str)
 void Delete_LCD(void)
 {
 	lcd_Control_Write(0x01);
-	SysTick_DelayMs(10);
+	DelayMs(10);
 }
 
 void lcd_gotoxy(uint8_t x,uint8_t y)
@@ -134,3 +127,14 @@ void lcd_gotoxy(uint8_t x,uint8_t y)
 	lcd_Control_Write(Address);
 }
 
+
+void lcd_printf(uint8_t x, uint8_t y, char *format, ...)	
+{
+	char buffer[20];
+	va_list args;
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+	lcd_gotoxy(x, y);
+	lcd_send_string(buffer);
+}
