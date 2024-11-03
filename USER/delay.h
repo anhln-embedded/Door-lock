@@ -1,26 +1,10 @@
-/*
-  ******************************************************************************
-  * @file		abc.h                                                              *
-  * @author	Luu Ngoc Anh                                                       *
-  * @date		00/00/0000                                                         *
-  ******************************************************************************
-*/
-	
-#ifndef __DELAY__H
-#define __DELAY__H
+#ifndef DELAY_H_
+#define DELAY_H_
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-void DelayInit(void);
-void DelayUs(uint32_t vrTime);
-void DelayMs(uint32_t vrTime);
+#include "stm32f10x.h"
 
-#ifdef __cplusplus
-}
-#endif
+void Delay_Init(void);
+void Delay_Us(uint32_t u32DelayInUs);
+void Delay_Ms(uint32_t u32DelayInMs);
 
 #endif
-
-/********************************* END OF FILE ********************************/
-/******************************************************************************/

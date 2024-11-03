@@ -1,35 +1,41 @@
-#include "stm32f10x.h"                  // Device header
-#include "delay.h"  
+#include "delay.h"
 
-volatile int usTicks = 0;
-
-void SysTick_Handler(void) // Function SysTick_Handler will be called every 1 us
+static void Timer_Init(void)
 {
-	if(usTicks != 0)
-	{
-		usTicks --;
-	}
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+
+	uint16_t PrescalerValue = 0;
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+	
+	PrescalerValue = (uint16_t) (SystemCoreClock / 1000000) - 1;
+	/* Time base configuration */
+	TIM_TimeBaseStructure.TIM_Period = 0xFFFF;
+	TIM_TimeBaseStructure.TIM_Prescaler = PrescalerValue;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+
+	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+	
+	/* TIM3 enable counter */
+	TIM_Cmd(TIM3, ENABLE);
 }
 
-void DelayInit(void)
+void Delay_Init(void)
 {
-	// Update SystemCoreClock value
-	SystemCoreClockUpdate();
-	// configure a tick to be 1 us
-	SysTick_Config(SystemCoreClock / 1000000);
+	Timer_Init();
 }
-void DelayUs(uint32_t vrTime)
+
+void Delay_Us(uint32_t u32DelayInUs)
 {
-	// Reload us value
-	usTicks = vrTime;
-	// Wait until usTick reach zero
-	while(usTicks);
+	TIM_SetCounter(TIM3, 0);
+	while(TIM_GetCounter(TIM3) < u32DelayInUs);
 }
-void DelayMs(uint32_t vrTime)
+
+void Delay_Ms(uint32_t u32DelayInMs)
 {
-	while(vrTime--) // Wait vrTime reach zero
-	{
-		// delay 1ms
-		DelayUs(1000);
+	while (u32DelayInMs) {
+		Delay_Us(1000);
+		--u32DelayInMs;
 	}
 }

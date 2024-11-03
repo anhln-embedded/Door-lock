@@ -1,6 +1,4 @@
 #include "lcd_i2c.h"
-#include "delay.h"
-#include <stdio.h>
 #include <stdarg.h>
 
 
@@ -53,27 +51,27 @@ void lcd_Write_byte(char data)
 }
 void lcd_init (void)
 {
-	DelayInit();
+	Delay_Init();
 	I2C_LCD_Configuration();
 	/* Set 4-bits interface */
 	lcd_Control_Write(0x33);		 
-	DelayMs(10);
+	Delay_Ms(10);
 	lcd_Control_Write(0x32);
-	DelayMs(50);
+	Delay_Ms(50);
 	/* Start to set LCD function */
 	lcd_Control_Write(0x28);
-		DelayMs(50);	
+		Delay_Ms(50);	
 	/* clear LCD */
 	lcd_Control_Write(0x01);
-		DelayMs(50);
+		Delay_Ms(50);
 	/* wait 60ms */
 	
 	/* set entry mode */
-	lcd_Control_Write(0x06);	DelayMs(50);;
+	lcd_Control_Write(0x06);	Delay_Ms(50);
 	/* set display to on */	
-	lcd_Control_Write(0x0C);	DelayMs(50);;
+	lcd_Control_Write(0x0C);	Delay_Ms(50);
 	/* move cursor to home and set data address to 0 */
-	lcd_Control_Write(0x02);	DelayMs(50);
+	lcd_Control_Write(0x02);	Delay_Ms(50);
 }
 void lcd_Data_Write(char data)
 {
@@ -114,8 +112,9 @@ void lcd_send_string (char *str)
 void Delete_LCD(void)
 {
 	lcd_Control_Write(0x01);
-	DelayMs(10);
+	Delay_Ms(10);
 }
+
 
 void lcd_gotoxy(uint8_t x,uint8_t y)
 {

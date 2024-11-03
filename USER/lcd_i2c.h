@@ -1,8 +1,7 @@
 #ifndef __I2C_LCD_H
 #define __I2C_LCD_H
 
-
-	 
+#include "delay.h"
 #include "stm32f10x.h"
 
 #define PCF8574A_Address      	0x4e
