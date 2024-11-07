@@ -1,15 +1,6 @@
-#include "stm32f10x.h"
-
-/*=======================================================================
-Ngo Hung Cuong
-http://vidieukhien.org
-ngohungcuong@gmail.com
-0989696971
-=======================================================================*/
-
 #ifndef KT_SPI_H_
 #define KT_SPI_H_
-
+#include "stm32f10x.h"
 void TM_SPI_Init(void);
 
 uint8_t TM_SPI_Send(uint8_t data);
