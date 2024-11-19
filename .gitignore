@@ -51,4 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-MDK/*
+# KeilC build output
+MDK/Listings/*
+MDK/Objects/*
