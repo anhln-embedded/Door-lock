@@ -45,6 +45,8 @@ int main(void)
 	}
 }
 
+
+
 void My_GPIO_Init(void)
 {
 	GPIO_InitTypeDef gpioInit;
