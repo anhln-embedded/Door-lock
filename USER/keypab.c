@@ -15,7 +15,7 @@ char keymap[ROWS][COLS] = {
 void Keypad_Init(Keypad_Pin row_pins[], Keypad_Pin col_pins[]){
 	g_row_pins = row_pins;
 	g_col_pins = col_pins;
-	
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable,ENABLE);
 	GPIO_InitTypeDef GPIO_InitStructure = {0};
 	for(int row = 0; row < ROWS; row++){
 		Enable_GPIO_Clock(row_pins[row].port);

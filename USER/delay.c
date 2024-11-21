@@ -21,21 +21,21 @@ static void Timer_Init(void)
 	TIM_Cmd(TIM3, ENABLE);
 }
 
-void Delay_Init(void)
+void delay_init(void)
 {
 	Timer_Init();
 }
 
-void Delay_Us(uint32_t u32DelayInUs)
+void delay_us(u32 nus)
 {
 	TIM_SetCounter(TIM3, 0);
-	while(TIM_GetCounter(TIM3) < u32DelayInUs);
+	while(TIM_GetCounter(TIM3) < nus);
 }
 
-void Delay_Ms(uint32_t u32DelayInMs)
+void delay_ms(u16 nms)
 {
-	while (u32DelayInMs) {
-		Delay_Us(1000);
-		--u32DelayInMs;
+	while (nms) {
+		delay_us(1000);
+		--nms;
 	}
 }

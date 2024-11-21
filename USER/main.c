@@ -7,15 +7,15 @@ void My_GPIO_Init(void);
 uint8_t CardID[5];
 
 Keypad_Pin row_pins[ROWS] = {
-	{GPIOA, GPIO_Pin_1},
-	{GPIOA, GPIO_Pin_2},
-	{GPIOA, GPIO_Pin_3},
-	{GPIOA, GPIO_Pin_4}};
+	{GPIOB, GPIO_Pin_3},
+	{GPIOB, GPIO_Pin_4},
+	{GPIOB, GPIO_Pin_5},
+	{GPIOB, GPIO_Pin_6}};
 
 Keypad_Pin col_pins[COLS] = {
-	{GPIOA, GPIO_Pin_5},
-	{GPIOA, GPIO_Pin_6},
-	{GPIOA, GPIO_Pin_7}};
+	{GPIOB, GPIO_Pin_7},
+	{GPIOB, GPIO_Pin_8},
+	{GPIOB, GPIO_Pin_9}};
 
 int main(void)
 {
@@ -31,7 +31,7 @@ int main(void)
 		{
 			lcd_printf(0, 0, "ID: 0x%02X%02X%02X%02X%02X", CardID[0], CardID[1], CardID[2], CardID[3], CardID[4]);
 			GPIO_SetBits(GPIOC, GPIO_Pin_13);
-			Delay_Ms(2000);
+			delay_ms(2000);
 			GPIO_ResetBits(GPIOC, GPIO_Pin_13);
 		}
 
@@ -41,11 +41,9 @@ int main(void)
 			lcd_gotoxy(0, 1);
 			lcd_Data_Write(c);
 		}
-		Delay_Ms(50);
+		delay_ms(50);
 	}
 }
-
-
 
 void My_GPIO_Init(void)
 {
