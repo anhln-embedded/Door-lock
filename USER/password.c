@@ -67,3 +67,14 @@ uint8_t check_id_card(uint8_t CardID[]){
 		}		
 	}
 }
+
+uint8_t erase_id_card(void){
+	Flash_Unlock();
+	Flash_Erase(ID_CARD_BASE);
+	Flash_Lock();
+	if(*((uint32_t*)(ID_CARD_BASE)) != 0xffffffff)
+	{
+		return 0;
+	}
+	return 1;
+}

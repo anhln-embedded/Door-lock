@@ -47,6 +47,18 @@ static enum {
 	FINISH_DELETE_FINGERPRINT,
 } delete_fingerprint = ENTER_DELETE_FINGERPRINT;
 
+static enum {
+	ENTER_ADD_RFID_CARD,
+	ENTER_PASSWORD_RFID_CARD,
+	FINISH_ADD_RFID_CARD,
+} add_rfid_card = ENTER_ADD_RFID_CARD;
+
+static enum {
+	ENTER_DELETE_RFID_CARD,
+	ENTER_PASSWORD_DELETE_RFID_CARD,
+	FINISH_DELETE_RFID_CARD,
+} delete_rfid_card = ENTER_DELETE_RFID_CARD;
+
 volatile system_stt SYSTEM_STATUS = ENTER_CHANGE_PASS;
 
 void Fn_Init(void);
@@ -214,6 +226,8 @@ void Fn_RTOS_Task_Gui(void *p)
 				add_fingerprint = ENTER_ADD_FINGERPRINT;
 				password_input_index = 0;
 				SYSTEM_STATUS = ADD_RFID_CARD;
+				Delete_LCD();
+				lcd_printf(0, 0, "ADD RFID CARD");
 			}
 			else if (input == '#')
 			{
@@ -254,21 +268,64 @@ void Fn_RTOS_Task_Gui(void *p)
 			}
 			break;
 		case ADD_RFID_CARD:
-			Delete_LCD();
-			lcd_printf(0, 0, "ADD RFID CARD");
+
 			input = Keypad_Read_Until();
 			if (input == '*')
 			{
+				password_input[0] = 0;
+				password_input_index = 0;
 				SYSTEM_STATUS = DELETE_FINGERPRINT;
 				Delete_LCD();
 				lcd_printf(0, 0, "DEL FINGERPRINT");
+			}
+			else if (input == '#')
+			{
+				switch (add_rfid_card)
+				{
+				case ENTER_ADD_RFID_CARD:
+					Delete_LCD();
+					lcd_printf(0, 0, "ENTER PASSWORD");
+					add_rfid_card = ENTER_PASSWORD_RFID_CARD;
+					break;
+				case ENTER_PASSWORD_RFID_CARD:
+					if (password_check(password_input))
+					{
+						Delete_LCD();
+						lcd_printf(0, 0, "FINISH ADD");
+						add_rfid_card = FINISH_ADD_RFID_CARD;
+					}
+					else
+					{
+						Delete_LCD();
+						lcd_printf(0, 1, "WRONG PASSWORD");
+						add_rfid_card = ENTER_ADD_RFID_CARD;
+					}
+					break;
+				case FINISH_ADD_RFID_CARD:
+					break;
+				default:
+					break;
+				}
+				password_input[0] = 0;
+				password_input_index = 0;
+			}
+			else
+			{
+				password_input[password_input_index] = input;
+				lcd_printf(password_input_index, 1, "*              ");
+				password_input_index++;
+				password_input[password_input_index] = 0;
 			}
 			break;
 		case DELETE_FINGERPRINT:
 			input = Keypad_Read_Until();
 			if (input == '*')
 			{
+				password_input[0] = 0;
+				password_input_index = 0;
 				SYSTEM_STATUS = DELETE_RFID_CARD;
+				Delete_LCD();
+				lcd_printf(0, 0, "DEL RFID CARD");
 			}
 			else if (input == '#')
 			{
@@ -308,12 +365,50 @@ void Fn_RTOS_Task_Gui(void *p)
 			}
 			break;
 		case DELETE_RFID_CARD:
-			Delete_LCD();
-			lcd_printf(0, 0, "DEL RFID CARD");
 			input = Keypad_Read_Until();
 			if (input == '*')
 			{
+				password_input[0] = 0;
+				password_input_index = 0;
 				SYSTEM_STATUS = WAIT_FOR_UNLOCK;
+			}
+			else if (input == '#')
+			{
+				switch (delete_rfid_card)
+				{
+				case ENTER_DELETE_RFID_CARD:
+					Delete_LCD();
+					lcd_printf(0, 0, "ENTER PASSWORD");
+					delete_rfid_card = ENTER_PASSWORD_DELETE_RFID_CARD;
+					break;
+				case ENTER_PASSWORD_DELETE_RFID_CARD:
+					if (password_check(password_input))
+					{
+						Delete_LCD();
+						lcd_printf(0, 0, "FINISH DELETE");
+						delete_rfid_card = FINISH_DELETE_RFID_CARD;
+					}
+					else
+					{
+						Delete_LCD();
+						lcd_printf(0, 1, "WRONG PASSWORD");
+						delete_rfid_card = ENTER_DELETE_RFID_CARD;
+					}
+					break;
+				case FINISH_DELETE_RFID_CARD:
+					break;
+				default:
+					break;
+				}
+				password_input[0] = 0;
+				password_input_index = 0;
+			}
+			else
+			{
+				password_input[password_input_index] = input;
+				lcd_printf(password_input_index, 1, "*              ");
+				password_input_index++;
+				password_input[password_input_index] = 0;
 			}
 			break;
 		default:
@@ -454,8 +549,53 @@ void Fn_RTOS_Task_RFID(void *p)
 			}
 			break;
 		case ADD_RFID_CARD:
+			if (add_rfid_card == FINISH_ADD_RFID_CARD)
+			{
+				Delete_LCD();
+				lcd_printf(0, 1, "WAIT FOR CARD");
+				while (TM_MFRC522_Check(CardID) != MI_OK)
+				{
+					vTaskDelay(200 / portTICK_RATE_MS);
+				}
+				if (TM_MFRC522_Check(CardID) == MI_OK)
+				{
+					if (check_id_card(CardID))
+					{
+						Delete_LCD();
+						lcd_printf(0, 1, "AVAILABLE CARD");
+					}
+					else
+					{
+						if (add_id_card(CardID))
+						{
+							Delete_LCD();
+							lcd_printf(0, 1, "ADD CARD OK");
+						}
+						else
+						{
+							Delete_LCD();
+							lcd_printf(0, 1, "ADD CARD FAIL");
+						}
+					}
+				}
+				add_rfid_card = ENTER_ADD_RFID_CARD;
+			}
 			break;
 		case DELETE_RFID_CARD:
+			if (delete_rfid_card == FINISH_DELETE_RFID_CARD)
+			{
+				if (erase_id_card())
+				{
+					Delete_LCD();
+					lcd_printf(0, 1, "DELETE CARD OK");
+				}
+				else
+				{
+					Delete_LCD();
+					lcd_printf(0, 1, "DELETE CARD FAIL");
+				}
+				delete_rfid_card = ENTER_DELETE_RFID_CARD;
+			}
 			break;
 		default:
 			break;
