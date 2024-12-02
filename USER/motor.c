@@ -13,11 +13,11 @@ void motor_int(void){
 	gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
 	gpioInit.GPIO_Pin = L298_IN2_PIN ;
 	GPIO_Init(L298_IN2_PORT, &gpioInit);	
-
+	motor_down();
 }
 void motor_up(void){
-
+	GPIOC->ODR &= ~(GPIO_Pin_13);
 }
 void motor_down(void){
-
+	GPIOC->ODR |= GPIO_Pin_13;
 }

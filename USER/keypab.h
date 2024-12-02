@@ -4,6 +4,7 @@
 
 #define ROWS 4
 #define COLS 3
+#define TIME_OUT 100
 
 typedef struct {
     GPIO_TypeDef* port;
@@ -12,5 +13,6 @@ typedef struct {
 
 void Keypad_Init(Keypad_Pin row_pins[], Keypad_Pin col_pins[]);
 char Keypad_Read(void);
+char Keypad_Read_Until(void);
 
 #endif

@@ -35,19 +35,29 @@ void Keypad_Init(Keypad_Pin row_pins[], Keypad_Pin col_pins[]){
 	
 }
 char Keypad_Read(void){
-
+	int time_out = TIME_OUT;
 	for(int col = 0; col < COLS; col ++){
 		GPIO_ResetBits(g_col_pins[col].port, g_col_pins[col].pin);
 		for(int row = 0; row < ROWS; row++){
 			if(GPIO_ReadInputDataBit(g_row_pins[row].port, g_row_pins[row].pin) == 0){
+				while(GPIO_ReadInputDataBit(g_row_pins[row].port, g_row_pins[row].pin) == 0){}
 				GPIO_SetBits(g_col_pins[col].port, g_col_pins[col].pin);
-//				while(GPIO_ReadInputDataBit(g_row_pins[row].port, g_row_pins[row].pin) == 0);
 				return keymap[row][col];
 			}
 		}
 		GPIO_SetBits(g_col_pins[col].port, g_col_pins[col].pin);
 	}
 	return 0;
+}
+
+char Keypad_Read_Until(void){
+	char input = 0;
+	while(1){
+		input = Keypad_Read();
+		if(input != 0)
+			break;
+	}
+	return input;
 }
 static void Enable_GPIO_Clock(GPIO_TypeDef *GPIOx){
     if (GPIOx == GPIOA) 
