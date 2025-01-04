@@ -98,11 +98,15 @@ void Fn_RTOS_Task_Control(void *p)
 		if ((xEventBits & EVENT_OPEN_DOOR) != 0)
 		{
 			motor_up();
-			delay_ms(2000);
-			motor_down();
+			delay_ms(600);
+			motor_stop();
 			xEventGroupClearBits(xEventGroup, EVENT_OPEN_DOOR);
+			delay_ms(1000);
 			Delete_LCD();
 			lcd_printf(0, 0, "WAIT FOR UNLOCK");
+			motor_down();
+			delay_ms(650);
+			motor_stop();
 		}
 	}
 }
@@ -355,6 +359,8 @@ void Fn_RTOS_Task_Gui(void *p)
 				default:
 					break;
 				}
+				password_input[0] = 0;
+				password_input_index = 0;
 			}
 			else
 			{

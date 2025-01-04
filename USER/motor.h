@@ -23,6 +23,7 @@
 void motor_int(void);
 void motor_up(void);
 void motor_down(void);
+void motor_stop(void);
 
 #ifdef __cplusplus
 }
